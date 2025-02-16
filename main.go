@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 type Weather struct {
@@ -23,7 +26,19 @@ type Weather struct {
 }
 
 func main() {
-	res, err := http.Get("http://api.weatherstack.com/current?access_key=310a1ed8b542d2c6bd37eba66fa05529&query=Tokyo")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	q := os.Getenv("WEATHER_API_KEY")
+	loc := "Tokyo"
+
+	if len(os.Args) >= 2 {
+		loc = os.Args[1]
+	}
+
+	res, err := http.Get("http://api.weatherstack.com/current?access_key=" + q + "&query=" + loc)
 	if err != nil {
 		panic(err)
 	}
